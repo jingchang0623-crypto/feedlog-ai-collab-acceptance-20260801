@@ -20,15 +20,19 @@ export function normalizeTask(input) {
     throw new RangeError('Task progress must be an integer from 0 through 100')
   }
 
-  return {
+  const normalized = {
     id,
     title,
     status: TASK_STATES.includes(input.status) ? input.status : 'planned',
-    progress,
   }
+  Object.defineProperty(normalized, 'progress', { value: progress })
+  return normalized
 }
 
 export function summarizeTask(task) {
   const normalized = normalizeTask(task)
-  return `${normalized.id}:${normalized.status}:${normalized.title}:progress=${normalized.progress}`
+  const prefix = `${normalized.id}:${normalized.status}:${normalized.title}`
+  return normalized.progress === 0
+    ? prefix
+    : `${prefix}:progress=${normalized.progress}`
 }
